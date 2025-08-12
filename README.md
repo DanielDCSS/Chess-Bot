@@ -1,2 +1,2 @@
 # Chess-Bot
-This guys will take over the world
+This guy will take over the world
