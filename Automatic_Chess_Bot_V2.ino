@@ -10,12 +10,13 @@ VarSpeedServo servo4; //Claw
 int speed = 15;
 int Delay = 1000;
 float M = 0.5;
+
 //Declaring the pin:
 int pin1 = 2;
 
+
 //Declaring the button:
 int RobotTurnButton;
-
 
 
 int Offsets[3] = {1, 1, 0};
@@ -156,16 +157,11 @@ void setup() {
   // put your setup code here, to run once:
   Serial.begin(9600);
 
+  
   pinMode(pin1, INPUT_PULLUP);
 
    
   //Attaching the servos to pins:
-  servo1.write(180);
-  servo2.write(20);
-  servo3.write(120);
-  servo4.write(85);
-  
-  
   servo1.attach(6);
   servo2.attach(9);
   servo3.attach(10);
@@ -173,54 +169,32 @@ void setup() {
 }
 
 void loop() {
-  // Check if data is available in the Serial Monitor
-
-  Serial.println("Write the origin and destination squares");
-  if (Serial.available() > 0) {
-
-    // 2. Read the first number (Origin)
-    // parseInt skips leading whitespace, so it handles the start well.
-    int originSquare = Serial.parseInt();
-
-    // 3. ROBUST WAIT for the second number (Destination)
-    // This loop discards spaces/newlines until it finds a strict DIGIT (0-9).
-    // This prevents the "Move to 0" error caused by the Enter key.
-    while (true) {
+  // put your main code here, to run repeatedly:
   
-      // If buffer is empty, wait for user input
-      while (Serial.available() == 0) {
-        // Do nothing, just wait for data
-      }
-      
-      // Look at the next character WITHOUT removing it yet
-      char incoming = Serial.peek();
-      
-      // If it is a digit, we are ready to parse! Break the wait loop.
-      if (isDigit(incoming)) {
-        break; 
-      }
-      
-      // If it's NOT a digit (like a newline or space), throw it away and keep waiting
-      Serial.read(); 
+  //Assigning the button to pin:
+  RobotTurnButton = digitalRead(pin1);
+  
+ 
+  //Instructions for if the robot needs to move ball from position 1 to 2:
+  if(RobotTurnButton == LOW) {
+    if (Movement[4] == 1){
+      Move(0, 3);
+      Move(4, 2);
+
     }
+    else if (Movement[4] == 2){
+      Move(7, 5);
+      Move(4, 6);
 
-    // 4. Read the second number
-    int destinationSquare = Serial.parseInt();
-
-    // 5. Clear the buffer 
-    // (Throw away the newline after the second number so it doesn't trigger the loop again)
-    while (Serial.available() > 0) {
-      Serial.read();
     }
+    else if (Movement[2] == true){
+      Move(Movement[3], 64);
+      Move(Movement[0], Movement[1]);
 
-    // 6. Execute Valid Move
-    // (You can add a check here: if origin is 0 and dest is 0, maybe don't move?)
-    Serial.print("Executing Move: ");
-    Serial.print(originSquare);
-    Serial.print(" to ");
-    Serial.println(destinationSquare);
-      
-    Move(originSquare, destinationSquare);
+    }
+    else {
+      Move(Movement[0], Movement[1]);
+
+    }
   }
-
 }
